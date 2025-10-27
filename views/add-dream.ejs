@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Add Dream - Dreamboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Handlee&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    body {
+      background: linear-gradient(135deg, #141E30, #243B55);
+      color: #fff;
+      font-family: 'Poppins', sans-serif;
+      min-height: 100vh;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .note-paper {
+      background: #fff8b3;
+      color: #222;
+      font-family: 'Handlee', cursive;
+      width: 100%;
+      max-width: 600px;
+      border: 1px solid #e5d774;
+      border-radius: 8px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+      padding: 25px;
+      position: relative;
+      transform: rotate(-1deg);
+    }
+
+    .note-paper::before {
+      content: "";
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 20px;
+      height: 20px;
+      background: radial-gradient(circle at center, #c0392b 60%, #000 100%);
+      border-radius: 50%;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+
+    /* Lined paper effect */
+    textarea {
+      width: 100%;
+      height: 300px;
+      border: none;
+      outline: none;
+      background: repeating-linear-gradient(
+        #fff8b3,
+        #fff8b3 24px,
+        #f1e48e 25px
+      );
+      line-height: 25px;
+      font-size: 1.2rem;
+      color: #111;
+      resize: none;
+      font-family: 'Handlee', cursive;
+      padding: 10px;
+    }
+
+    .btn-add {
+      display: block;
+      width: 100%;
+      margin-top: 20px;
+      background: #FFD700;
+      border: none;
+      color: #222;
+      font-weight: 600;
+      font-size: 1.1rem;
+      border-radius: 8px;
+      padding: 12px;
+      box-shadow: 0 4px 10px rgba(255, 215, 0, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .btn-add:hover {
+      background: #222;
+      color: #FFD700;
+      box-shadow: 0 4px 15px rgba(255, 215, 0, 0.5);
+    }
+
+    .back-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 1.5rem;
+      color: #FFD700;
+      text-decoration: none;
+    }
+
+    @media (max-width: 480px) {
+      .note-paper {
+        padding: 15px;
+      }
+      textarea {
+        height: 250px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <a href="/feed" class="back-btn">⬅️</a>
+
+  <div class="note-paper">
+    <div id="alertBox"></div>
+    <form id="dreamForm">
+        <textarea name="dream" id="dreamText" placeholder="Write your dream here... 🌙"></textarea>
+        <div class="char-counter">
+        <span id="charCount">0</span>/500
+      </div>
+      <button type="submit" class="btn-add">Save Dream ✨</button>
+    </form>
+  </div>
+    <script>
+        $(document).ready(function(){
+            console.log('<%= email %> no');
+            const $textarea = $('#dreamText');
+            const $counter = $('#charCount');
+            const maxLength = 500;
+
+            $textarea.on('input', function(){
+                let length = $(this).val().length;
+                $counter.text(length);
+
+                // Change color near the limit
+                if(length > maxLength - 50){
+                $counter.css('color', '#e74c3c'); // red
+                } else if(length > maxLength - 100){
+                $counter.css('color', '#f39c12'); // orange
+                } else {
+                $counter.css('color', '#444'); // normal
+                }
+            });
+
+            // Optional: AJAX submission (if you want to handle without reload)
+            $('#dreamForm').on('submit', function(e){
+                e.preventDefault();
+
+                $(".btn-add").prop('disabled', true);
+
+                const dreamText = $textarea.val().trim();
+                if(!dreamText){
+                // alert('Please write your dream before saving');
+                    $("#alertBox").html(`
+                        <div class="alert alert-warning alert-dismissible fade show mt-3" role="alert">
+                            Please write your dream before saving
+                        </div>
+                    `);
+                    return;
+                }
+
+                $.ajax({
+                    url: '/add-dream',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ dream: dreamText, author: `<%= email %>`}),
+                    success: function(res){
+                        // alert('Dream saved successfully ✨');
+                        if(res.success){
+                            window.location.href = '/feed';
+                        }
+                    },
+                    error: function(){
+                        // alert('❌ Something went wrong, try again later.');
+                        $("#alertBox").html(`
+                            <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+                                ❌ Something went wrong, try again later.
+                            </div>
+                        `);
+                    }
+                });
+            });
+        });
+  </script>
+</body>
+</html>

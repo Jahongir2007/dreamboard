@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>User Feed - Dreamboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Handlee&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      background: linear-gradient(135deg, #141E30, #243B55);
+      color: #fff;
+      font-family: 'Poppins', sans-serif;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    nav.navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 25px;
+      color: #FFD700;
+      z-index: 1000;
+    }
+
+    .navbar h4 {
+      margin: 0;
+      font-weight: 700;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 20px;
+    }
+
+    .nav-item {
+      color: #FFD700;
+      font-size: 1.3rem;
+      text-decoration: none;
+      transition: 0.3s;
+    }
+
+    .nav-item:hover, .nav-item.active {
+      color: #fff;
+    }
+
+    /* --- MOBILE (BOTTOM NAVBAR) --- */
+    @media (max-width: 768px) {
+      nav.navbar {
+        top: auto;
+        bottom: 0;
+        justify-content: space-around;
+        border-top: 1px solid rgba(255, 255, 255, 0.15);
+        border-bottom: none;
+        padding: 10px 0;
+      }
+
+      .navbar h4 {
+        display: none;
+      }
+
+      .nav-links {
+        width: 100%;
+        display: flex;
+        justify-content: space-around;
+        gap: 0;
+      }
+
+      .nav-item {
+        font-size: 1.5rem;
+        padding: 10px;
+      }
+    }
+
+    .feed-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 90px 20px 80px;
+    }
+
+    /* --- STICKY NOTE STYLE --- */
+    .feed-card {
+      background: #fff8b3;
+      color: #222;
+      font-family: 'Handlee', cursive;
+      border-radius: 8px;
+      border: 1px solid #e5d774;
+      width: 100%;
+      max-width: 550px;
+      padding: 25px;
+      margin-bottom: 25px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+      position: relative;
+      transform: rotate(-1deg);
+      animation: fadeIn 0.5s ease;
+    }
+
+    .feed-card:nth-child(even) {
+      transform: rotate(1.2deg);
+    }
+
+    .feed-card::before {
+      content: "";
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 20px;
+      height: 20px;
+      background: radial-gradient(circle at center, #c0392b 60%, #000 100%);
+      border-radius: 50%;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+
+    .feed-card p {
+      color: #333;
+      font-size: 1.05rem;
+      margin-bottom: 20px;
+      white-space: pre-line;
+    }
+
+    /* --- NOTE FOOTER (AUTHOR, LIKES, ETC) --- */
+    .note-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.9rem;
+      color: #444;
+      border-top: 1px dashed #ccc;
+      padding-top: 10px;
+    }
+
+    .note-footer .left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .note-footer .right {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .action-btn {
+      border: none;
+      background: transparent;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .action-btn:hover {
+      transform: scale(1.2);
+    }
+
+    .like-btn { color: #e74c3c; }
+    .view-icon { color: #2980b9; }
+
+    .liked {
+      transform: scale(1.2);
+      text-shadow: 0 0 6px rgba(231, 76, 60, 0.6);
+    }
+
+    /* Floating Add Dream Button */
+    .add-dream-btn {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      background: #FFD700;
+      color: #222;
+      border: none;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      font-size: 32px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+      cursor: pointer;
+      transition: 0.3s ease;
+      z-index: 1200;
+    }
+
+    .add-dream-btn:hover {
+      background: #222;
+      color: #FFD700;
+      box-shadow: 0 4px 20px rgba(255, 215, 0, 0.6);
+      transform: scale(1.05);
+    }
+
+    @media (max-width: 480px) {
+      .feed-card { padding: 20px; }
+      .add-dream-btn {
+        width: 50px;
+        height: 50px;
+        font-size: 26px;
+        bottom: 80px; /* ✅ moved up so it doesn’t hide navbar */
+        right: 20px;
+      }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .notif-count {
+      background: #e74c3c;
+      color: white;
+      font-size: 0.8rem;
+      border-radius: 50%;
+      padding: 2px 6px;
+      position: relative;
+      top: -10px;
+      right: 5px;
+      font-weight: bold;
+    }
+
+    .toast-notif {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #FFD700;
+      color: #222;
+      padding: 10px 15px;
+      border-radius: 10px;
+      font-weight: 600;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      display: none;
+      z-index: 9999;
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar">
+    <h4>🎯 DreamBoard</h4>
+    <div class="nav-links">
+      <a href="/feed" class="nav-item active">🏠</a>
+      <a href="/dreams" class="nav-item">💭</a>
+      <a href="/notifications" class="nav-item">🔔 <span id="notifCount" class="notif-count">0</span></a>
+      <a href="/profile" class="nav-item">👤</a>
+    </div>
+  </nav>
+
+  <div class="feed-container">
+    <% dreams.forEach(dream => { %>
+      <div class="feed-card" data-id="<%= dream.id %>">
+        <p><%= dream.dream %></p>
+
+        <div class="note-footer">
+          <div class="left">
+            ✍️ <%= "Anonymous" %>
+          </div>
+          <div class="right">
+            <span class="view-icon">👁️ <span class="view-count"><%= dream.views %></span></span>
+            <button class="action-btn like-btn <%= dream.liked ? 'liked' : '' %>">
+              ❤️ <span class="like-count"><%= dream.likes %></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+
+  <!-- Floating Add Dream Button -->
+  <button class="add-dream-btn" id="addDreamBtn">+</button>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+
+  const socket = io();
+  const userEmail = "<%= email %>"; // from backend
+  // console.log(userEmail);
+  socket.emit("identify", userEmail);
+
+  let notifCount = 0;
+
+  // 💫 Function to increment & show notifications
+  function updateNotif(message) {
+    notifCount++;
+    $("#notifCount").text(notifCount);
+
+    // optional toast popup
+    const box = $("<div>").addClass("toast-notif").text(message).appendTo("body").fadeIn(200);
+    setTimeout(() => box.fadeOut(400, () => box.remove()), 4000);
+  }
+
+  // 🔥 Listen to events
+  socket.on("newDream", (msg) => updateNotif(msg));
+  socket.on("likeNotification", (msg) => {
+    console.log("📩 New like notification:", msg);
+    updateNotif(msg);
+  });
+
+  // Optionally: load unread count on page load
+  $.get("/notifications/count", function (res) {
+    if (res.count) $("#notifCount").text(res.count);
+  });
+
+  // ➕ Add Dream button click
+  $('#addDreamBtn').on('click', function() {
+    window.location.href = '/add-dream';
+  });
+
+  // ❤️ Like button
+  $(document).on('click', '.like-btn', function () {
+  const $btn = $(this);
+  const $card = $btn.closest('.feed-card');
+  const id = $card.data('id');
+
+  $.ajax({
+  url: `/dream/like/${id}`,
+  method: 'POST',
+  dataType: 'json',
+  success(res) {
+    if (res.success) {
+      if (res.liked) $btn.addClass('liked');
+      else $btn.removeClass('liked');
+
+      // ✅ Update like count from backend
+      $btn.find('.like-count').text(res.likes);
+    } else {
+      console.error('Like error', res.message);
+    }
+  },
+  error(err) {
+    console.error('Server error', err);
+  }
+});
+});
+
+
+  // 👁️ Auto-count views when dream card becomes visible
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        const $card = $(entry.target);
+        const dreamId = $card.data("id");
+
+        // prevent duplicate view count
+        if ($card.data("viewed")) return;
+        $card.data("viewed", true);
+
+        // ⚙️ AJAX call for view update
+        $.ajax({
+          url: `/dream/view/${dreamId}`,
+          method: "POST",
+          dataType: "json",
+          success: function(res) {
+            if (res.success) {
+              const $viewCount = $card.find(".view-count");
+              let current = parseInt($viewCount.text());
+              let newViews = current + 1;
+
+              $viewCount.fadeOut(100, function() {
+                $(this).text(newViews).fadeIn(300);
+              });
+            }
+          },
+          error: function(err) {
+            console.error("View update failed:", err);
+          }
+        });
+      }
+    });
+  }, { threshold: 0.6 });
+
+  // Observe all dream cards
+  $(".feed-card").each(function() {
+    observer.observe(this);
+  });
+</script>
+</body>
+</html>

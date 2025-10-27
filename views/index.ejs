@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dreamboard</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      background: linear-gradient(135deg, #141E30, #243B55);
+      color: #fff;
+      font-family: 'Poppins', sans-serif;
+      text-align: center;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 0 20px;
+    }
+
+    .hero-title {
+      font-size: 3rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .hero-text {
+      font-size: 1.2rem;
+      max-width: 600px;
+      margin: 10px auto 40px;
+      color: #ddd;
+    }
+
+    .btn-custom {
+      border-radius: 30px;
+      padding: 10px 30px;
+      font-size: 1.1rem;
+      margin: 10px;
+    }
+
+    footer {
+      position: absolute;
+      bottom: 15px;
+      font-size: 0.9rem;
+      color: #aaa;
+    }
+  </style>
+</head>
+
+<body>
+  <h1 class="hero-title">🎯 DreamBoard</h1>
+  <p class="hero-text">
+    A small social platform where students can share their dreams and goals anonymously.  
+    Post your ambitions like sticky notes on a digital board and inspire others 🌟
+  </p>
+
+  <div>
+    <a href="/signup" class="btn btn-warning btn-custom">Sign Up</a>
+    <a href="/login" class="btn btn-outline-light btn-custom">Log In</a>
+  </div>
+
+  <footer>
+    © 2025 DreamBoard by INHA Student
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
