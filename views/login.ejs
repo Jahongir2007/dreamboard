@@ -148,11 +148,24 @@
               setTimeout(() => {
                 window.location.href = `/verify-info?email=${encodeURIComponent(usernameOrEmail)}`;  // 👈 new page
               }, 2000);
+            }else if(res.success == false && res.message == 'Email/username or password is incorrect'){
+              $("#alertBox").html(`
+              <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+                Email/username or password is incorrect
+              </div>
+            `);
             }
           },
           error: function(err){
               console.error(err);
-              alert("❌ Server error, please try again later.");
+              $("#alertBox").html(`
+              <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+                Email/username or password is incorrect
+              </div>
+            `);
+              $("#login-btn").prop('disabled', false);
+              $("#loginText").text("Log in");
+              $("#loginSpinner").addClass("d-none");
           }
         });
       });
